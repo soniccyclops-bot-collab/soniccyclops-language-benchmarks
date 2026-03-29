@@ -7,6 +7,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 RESULTS_DIR="$ROOT_DIR/results"
 BENCH_DIR="$ROOT_DIR/benchmarks"
 RUNS="${BENCHMARK_RUNS:-1}"  # Number of runs per benchmark (increase for local use)
+TIMEOUT="${BENCHMARK_TIMEOUT:-300}"  # Per-run timeout in seconds (default 5 min)
 
 mkdir -p "$RESULTS_DIR"
 
@@ -24,8 +25,13 @@ run_single() {
     local times=()
 
     for ((i=1; i<=RUNS; i++)); do
-        # Use /usr/bin/time for wall clock + max RSS
-        result=$( { /usr/bin/time -v $cmd $arg > /dev/null; } 2>&1 )
+        # Use /usr/bin/time for wall clock + max RSS, with timeout
+        result=$( { timeout "$TIMEOUT" /usr/bin/time -v $cmd $arg > /dev/null; } 2>&1 )
+        exit_code=$?
+        if [ $exit_code -eq 124 ]; then
+            echo "  Run $i: TIMEOUT (>${TIMEOUT}s) — skipping"
+            return 1
+        fi
         wall=$(echo "$result" | grep "Elapsed (wall clock)" | sed 's/.*: //')
         maxrss=$(echo "$result" | grep "Maximum resident" | awk '{print $NF}')
 
