@@ -87,6 +87,17 @@ compile_and_run() {
                     echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
                 fi
             done
+            # Clython (Python interpreter in Common Lisp)
+            if [ -x "$ROOT_DIR/.clython/bin/clython" ]; then
+                echo "=== $bench / clython ==="
+                result=$(run_single "$bench" "clython" "$ROOT_DIR/.clython/bin/clython $src" "$arg" 2>/dev/null) || true
+                if [ -n "$result" ]; then
+                    json_line=$(echo "$result" | tail -1)
+                    echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+                else
+                    echo "  SKIPPED (clython failed)"
+                fi
+            fi
             return 0
             ;;
         *)

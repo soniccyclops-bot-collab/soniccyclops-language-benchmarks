@@ -4,6 +4,7 @@
 *.exe
 results/
 site/
+.clython/
 
 # IDE
 .idea/

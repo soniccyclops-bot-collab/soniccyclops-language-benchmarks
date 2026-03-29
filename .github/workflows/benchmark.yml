@@ -48,6 +48,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq time sbcl
 
+      - name: Set up Clython
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/setup-clython.sh || true
+
       - name: Run benchmarks
         run: |
           chmod +x scripts/*.sh
