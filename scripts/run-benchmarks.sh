@@ -1,6 +1,6 @@
 #!/bin/bash
 # run-benchmarks.sh — Run all benchmarks and collect results as JSON
-set -euo pipefail
+set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"

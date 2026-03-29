@@ -8,10 +8,37 @@ RESULTS_DIR="$ROOT_DIR/results"
 SITE_DIR="$ROOT_DIR/site"
 RESULTS_FILE="$RESULTS_DIR/results.jsonl"
 
-if [ ! -f "$RESULTS_FILE" ]; then
-    echo "No results found at $RESULTS_FILE"
-    echo "Run 'make bench' first."
-    exit 1
+mkdir -p "$RESULTS_DIR"
+
+if [ ! -f "$RESULTS_FILE" ] || [ ! -s "$RESULTS_FILE" ]; then
+    echo "No benchmark results yet. Generating placeholder site."
+    mkdir -p "$SITE_DIR"
+    cat > "$SITE_DIR/index.html" << 'PLACEHOLDER'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Benchmarks</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #0d1117; color: #e6edf3; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .msg { text-align: center; }
+        h1 { margin-bottom: 1rem; }
+        p { color: #8b949e; }
+        a { color: #58a6ff; }
+    </style>
+</head>
+<body>
+    <div class="msg">
+        <h1>⚡ Language Benchmarks</h1>
+        <p>No benchmark results yet. Implementations are in progress.</p>
+        <p><a href="https://github.com/soniccyclops-bot-collab/soniccyclops-language-benchmarks/issues">View open issues</a></p>
+    </div>
+</body>
+</html>
+PLACEHOLDER
+    echo "Placeholder site generated at $SITE_DIR/index.html"
+    exit 0
 fi
 
 mkdir -p "$SITE_DIR"
