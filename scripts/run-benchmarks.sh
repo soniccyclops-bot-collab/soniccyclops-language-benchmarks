@@ -77,6 +77,18 @@ compile_and_run() {
             sbcl --disable-debugger --no-sysinit --no-userinit --load "$src" --eval '(sb-ext:save-lisp-and-die "'"$bin"'" :toplevel #'"'"'main :executable t)' 2>/dev/null
             run_single "$bench" "$lang" "$bin" "$arg"
             ;;
+        python)
+            src=$(find "$dir" -name "*.py" | head -1)
+            for runtime in python3 pypy3 graalpy; do
+                if command -v $runtime &>/dev/null; then
+                    echo "=== $bench / $runtime ==="
+                    result=$(run_single "$bench" "$runtime" "$runtime $src" "$arg")
+                    json_line=$(echo "$result" | tail -1)
+                    echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+                fi
+            done
+            return 0
+            ;;
         *)
             echo "Unknown language: $lang" >&2
             return 1
@@ -96,8 +108,14 @@ for bench in "${!BENCH_ARGS[@]}"; do
         [ "$lang" = "README.md" ] && continue
 
         # Check if there are source files
-        if ! find "$lang_dir" -name "*.c" -o -name "*.go" -o -name "*.java" -o -name "*.lisp" 2>/dev/null | grep -q .; then
+        if ! find "$lang_dir" -name "*.c" -o -name "*.go" -o -name "*.java" -o -name "*.lisp" -o -name "*.py" 2>/dev/null | grep -q .; then
             echo "=== $bench / $lang === SKIPPED (no source)"
+            continue
+        fi
+
+        # Python handles its own result output (multiple runtimes)
+        if [ "$lang" = "python" ]; then
+            compile_and_run "$bench" "$lang" "$lang_dir" "$arg"
             continue
         fi
 
