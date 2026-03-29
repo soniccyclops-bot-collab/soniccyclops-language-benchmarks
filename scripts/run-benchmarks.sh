@@ -71,6 +71,12 @@ compile_and_run() {
             javac -d "$dir" "$src"
             run_single "$bench" "$lang" "java -cp $dir $classname" "$arg"
             ;;
+        cl)
+            src=$(find "$dir" -name "*.lisp" | head -1)
+            bin="$dir/benchmark"
+            sbcl --disable-debugger --no-sysinit --no-userinit --load "$src" --eval '(sb-ext:save-lisp-and-die "'"$bin"'" :toplevel #'"'"'main :executable t)' 2>/dev/null
+            run_single "$bench" "$lang" "$bin" "$arg"
+            ;;
         *)
             echo "Unknown language: $lang" >&2
             return 1
@@ -90,7 +96,7 @@ for bench in "${!BENCH_ARGS[@]}"; do
         [ "$lang" = "README.md" ] && continue
 
         # Check if there are source files
-        if ! find "$lang_dir" -name "*.c" -o -name "*.go" -o -name "*.java" 2>/dev/null | grep -q .; then
+        if ! find "$lang_dir" -name "*.c" -o -name "*.go" -o -name "*.java" -o -name "*.lisp" 2>/dev/null | grep -q .; then
             echo "=== $bench / $lang === SKIPPED (no source)"
             continue
         fi
