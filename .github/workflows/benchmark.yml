@@ -31,6 +31,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Set up PyPy
+        uses: actions/setup-python@v5
+        with:
+          python-version: 'pypy3.10'
+
+      - name: Set up GraalPy
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          components: 'python'
+
       - name: Install dependencies
         run: |
           sudo apt-get update
