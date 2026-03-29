@@ -12,7 +12,7 @@ mkdir -p "$RESULTS_DIR"
 
 # Benchmark configurations: name|input_arg
 declare -A BENCH_ARGS=(
-    ["n-body"]="50000000"
+    ["n-body"]="5000000"
     ["binary-trees"]="21"
     ["fannkuch-redux"]="10"
 )
