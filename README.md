@@ -1,5 +1,7 @@
 # Language Benchmarks
 
+**[View Results →](https://soniccyclops-bot-collab.github.io/soniccyclops-language-benchmarks/)**
+
 Performance benchmarks comparing language implementations across classic algorithms. Results published as a static site via GitHub Pages.
 
 ## Languages
