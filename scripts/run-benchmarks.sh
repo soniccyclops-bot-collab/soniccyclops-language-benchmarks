@@ -88,20 +88,26 @@ compile_and_run() {
             for runtime in python3 pypy3 graalpy; do
                 if command -v $runtime &>/dev/null; then
                     echo "=== $bench / $runtime ==="
-                    result=$(run_single "$bench" "$runtime" "$runtime $src" "$arg")
-                    json_line=$(echo "$result" | tail -1)
-                    echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+                    if result=$(run_single "$bench" "$runtime" "$runtime $src" "$arg"); then
+                        json_line=$(echo "$result" | tail -1)
+                        if [[ "$json_line" == \{* ]]; then
+                            echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+                        fi
+                    else
+                        echo "  SKIPPED ($runtime timed out or failed)"
+                    fi
                 fi
             done
             # Clython (Python interpreter in Common Lisp)
             if [ -x "$ROOT_DIR/.clython/bin/clython" ]; then
                 echo "=== $bench / clython ==="
-                result=$(run_single "$bench" "clython" "$ROOT_DIR/.clython/bin/clython $src" "$arg" 2>/dev/null) || true
-                if [ -n "$result" ]; then
+                if result=$(run_single "$bench" "clython" "$ROOT_DIR/.clython/bin/clython $src" "$arg" 2>/dev/null); then
                     json_line=$(echo "$result" | tail -1)
-                    echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+                    if [[ "$json_line" == \{* ]]; then
+                        echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+                    fi
                 else
-                    echo "  SKIPPED (clython failed)"
+                    echo "  SKIPPED (clython timed out or failed)"
                 fi
             fi
             return 0
@@ -136,9 +142,12 @@ for bench in "${!BENCH_ARGS[@]}"; do
             continue
         fi
 
-        result=$(compile_and_run "$bench" "$lang" "$lang_dir" "$arg")
-        json_line=$(echo "$result" | tail -1)
-        echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+        if result=$(compile_and_run "$bench" "$lang" "$lang_dir" "$arg"); then
+            json_line=$(echo "$result" | tail -1)
+            if [[ "$json_line" == \{* ]]; then
+                echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
+            fi
+        fi
     done
 done
 
