@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 RESULTS_DIR="$ROOT_DIR/results"
 BENCH_DIR="$ROOT_DIR/benchmarks"
-RUNS="${BENCHMARK_RUNS:-3}"  # Number of runs per benchmark (median taken)
+RUNS="${BENCHMARK_RUNS:-1}"  # Number of runs per benchmark (increase for local use)
 
 mkdir -p "$RESULTS_DIR"
 
@@ -14,7 +14,7 @@ mkdir -p "$RESULTS_DIR"
 declare -A BENCH_ARGS=(
     ["n-body"]="50000000"
     ["binary-trees"]="21"
-    ["fannkuch-redux"]="12"
+    ["fannkuch-redux"]="10"
 )
 
 timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
