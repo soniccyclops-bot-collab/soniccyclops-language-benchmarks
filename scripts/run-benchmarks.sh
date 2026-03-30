@@ -105,7 +105,12 @@ compile_and_run() {
             # Clython (Python interpreter in Common Lisp)
             if [ -x "$ROOT_DIR/.clython/bin/clython" ]; then
                 echo "=== $bench / clython ==="
-                if result=$(run_single "$bench" "clython" "$ROOT_DIR/.clython/bin/clython $src" "$arg" 2>/dev/null); then
+                # Prefer _clython.py variant (hardcoded values, no sys dependency)
+                clython_src=$(find "$(dirname "$src")" -name "*_clython.py" | head -1)
+                clython_target="${clython_src:-$src}"
+                # Clython-compatible scripts are self-contained (ignore arg)
+                clython_arg="${clython_src:+}"
+                if result=$(run_single "$bench" "clython" "$ROOT_DIR/.clython/bin/clython $clython_target" "${clython_arg:-$arg}" 2>/dev/null); then
                     json_line=$(echo "$result" | tail -1)
                     if [[ "$json_line" == \{* ]]; then
                         echo "$json_line" >> "$RESULTS_DIR/results.jsonl"
