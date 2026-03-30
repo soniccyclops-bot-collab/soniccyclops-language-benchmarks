@@ -32,6 +32,10 @@ run_single() {
             echo "  Run $i: TIMEOUT (>${TIMEOUT}s) — skipping"
             return 1
         fi
+        if [ $exit_code -ne 0 ]; then
+            echo "  Run $i: FAILED (exit code $exit_code) — skipping"
+            return 1
+        fi
         wall=$(echo "$result" | grep "Elapsed (wall clock)" | sed 's/.*: //')
         maxrss=$(echo "$result" | grep "Maximum resident" | awk '{print $NF}')
 
